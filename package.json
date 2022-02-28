@@ -33,7 +33,9 @@
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {
-    "@rollup/pluginutils": "^4.1.2"
+    "@rollup/pluginutils": "^4.1.2",
+    "ast-types": "^0.14.2",
+    "recast": "^0.20.5"
   },
   "peerDependencies": {
     "rollup": "^2.0.0"

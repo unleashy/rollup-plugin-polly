@@ -7,7 +7,6 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "noImplicitOverride": true,
-    "noImplicitReturns": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "module": "CommonJS",

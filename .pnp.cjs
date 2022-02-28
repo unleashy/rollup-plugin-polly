@@ -37,8 +37,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@rollup/plugin-sucrase", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:4.0.2"],\
             ["@rollup/pluginutils", "npm:4.1.2"],\
             ["@types/node", "npm:17.0.21"],\
+            ["ast-types", "npm:0.14.2"],\
             ["del-cli", "npm:3.0.1"],\
             ["prettier", "npm:2.5.1"],\
+            ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"],\
@@ -491,6 +493,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["ast-types", [\
+        ["npm:0.14.2", {\
+          "packageLocation": "./.yarn/cache/ast-types-npm-0.14.2-43c4ac4b0d-8674a77307.zip/node_modules/ast-types/",\
+          "packageDependencies": [\
+            ["ast-types", "npm:0.14.2"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["balanced-match", [\
         ["npm:1.0.2", {\
           "packageLocation": "./.yarn/cache/balanced-match-npm-1.0.2-a53c126459-9706c088a2.zip/node_modules/balanced-match/",\
@@ -857,6 +869,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/escape-string-regexp-npm-1.0.5-3284de402f-6092fda75c.zip/node_modules/escape-string-regexp/",\
           "packageDependencies": [\
             ["escape-string-regexp", "npm:1.0.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["esprima", [\
+        ["npm:4.0.1", {\
+          "packageLocation": "./.yarn/cache/esprima-npm-4.0.1-1084e98778-b45bc805a6.zip/node_modules/esprima/",\
+          "packageDependencies": [\
+            ["esprima", "npm:4.0.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1915,6 +1936,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["recast", [\
+        ["npm:0.20.5", {\
+          "packageLocation": "./.yarn/cache/recast-npm-0.20.5-35a50e82d9-14c35115cd.zip/node_modules/recast/",\
+          "packageDependencies": [\
+            ["recast", "npm:0.20.5"],\
+            ["ast-types", "npm:0.14.2"],\
+            ["esprima", "npm:4.0.1"],\
+            ["source-map", "npm:0.6.1"],\
+            ["tslib", "npm:2.3.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["redent", [\
         ["npm:3.0.0", {\
           "packageLocation": "./.yarn/cache/redent-npm-3.0.0-31892f4906-fa1ef20404.zip/node_modules/redent/",\
@@ -1985,8 +2019,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@rollup/plugin-sucrase", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:4.0.2"],\
             ["@rollup/pluginutils", "npm:4.1.2"],\
             ["@types/node", "npm:17.0.21"],\
+            ["ast-types", "npm:0.14.2"],\
             ["del-cli", "npm:3.0.1"],\
             ["prettier", "npm:2.5.1"],\
+            ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"],\
@@ -2105,6 +2141,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["agent-base", "npm:6.0.2"],\
             ["debug", "virtual:b86a9fb34323a98c6519528ed55faa0d9b44ca8879307c0b29aa384bde47ff59a7d0c9051b31246f14521dfb71ba3c5d6d0b35c29fffc17bf875aa6ad977d9e8#npm:4.3.3"],\
             ["socks", "npm:2.6.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["source-map", [\
+        ["npm:0.6.1", {\
+          "packageLocation": "./.yarn/cache/source-map-npm-0.6.1-1a3621db16-59ce8640cf.zip/node_modules/source-map/",\
+          "packageDependencies": [\
+            ["source-map", "npm:0.6.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2339,6 +2384,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/swc__wasm",\
             "@types/typescript",\
             "typescript"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["tslib", [\
+        ["npm:2.3.1", {\
+          "packageLocation": "./.yarn/cache/tslib-npm-2.3.1-0e21e18015-de17a98d46.zip/node_modules/tslib/",\
+          "packageDependencies": [\
+            ["tslib", "npm:2.3.1"]\
           ],\
           "linkType": "HARD"\
         }]\
