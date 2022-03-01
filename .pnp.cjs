@@ -39,6 +39,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:17.0.21"],\
             ["ast-types", "npm:0.14.2"],\
             ["del-cli", "npm:3.0.1"],\
+            ["fast-check", "npm:2.22.0"],\
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
@@ -894,6 +895,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/estree-walker-npm-2.0.2-dfab42f65c-6151e6f982.zip/node_modules/estree-walker/",\
           "packageDependencies": [\
             ["estree-walker", "npm:2.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["fast-check", [\
+        ["npm:2.22.0", {\
+          "packageLocation": "./.yarn/cache/fast-check-npm-2.22.0-c6dda2552f-a61172eef6.zip/node_modules/fast-check/",\
+          "packageDependencies": [\
+            ["fast-check", "npm:2.22.0"],\
+            ["pure-rand", "npm:5.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1881,6 +1892,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["pure-rand", [\
+        ["npm:5.0.0", {\
+          "packageLocation": "./.yarn/cache/pure-rand-npm-5.0.0-876eabf5ee-f33a9021a8.zip/node_modules/pure-rand/",\
+          "packageDependencies": [\
+            ["pure-rand", "npm:5.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["queue-microtask", [\
         ["npm:1.2.3", {\
           "packageLocation": "./.yarn/cache/queue-microtask-npm-1.2.3-fcc98e4e2d-b676f8c040.zip/node_modules/queue-microtask/",\
@@ -2021,6 +2041,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:17.0.21"],\
             ["ast-types", "npm:0.14.2"],\
             ["del-cli", "npm:3.0.1"],\
+            ["fast-check", "npm:2.22.0"],\
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
