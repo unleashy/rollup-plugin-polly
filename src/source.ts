@@ -1,5 +1,4 @@
 import { strict as assert } from "assert";
-import { Option, Some, None } from "./option";
 import { Span } from "./span";
 
 export type Char = string;
@@ -13,24 +12,24 @@ export class Source {
     this.str = str;
   }
 
-  next(): Option<Char> {
+  next(): Char | undefined {
     if (this.currentIndex < this.str.length) {
-      return Some(this.str[this.currentIndex++]);
+      return this.str[this.currentIndex++];
     } else {
-      return None;
+      return undefined;
     }
   }
 
-  peek(by = 0): Option<Char> {
+  peek(by = 0): Char | undefined {
     assert(Number.isInteger(by), "amount to peek must be an integer");
     assert(by >= 0, "amount to peek must be non-negative");
 
     const peekIndex = this.currentIndex + by;
 
     if (peekIndex < this.str.length) {
-      return Some(this.str[peekIndex]);
+      return this.str[peekIndex];
     } else {
-      return None;
+      return undefined;
     }
   }
 

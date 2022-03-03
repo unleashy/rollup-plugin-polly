@@ -2,7 +2,6 @@ import { AssertionError } from "assert";
 import { test } from "uvu";
 import * as assert from "uvu/assert";
 import * as fc from "fast-check";
-import { Some, None } from "../src/option";
 import { Span } from "../src/span";
 import { Source } from "../src/source";
 
@@ -10,7 +9,7 @@ function sourceToString(source: Source): string {
   let arr = [];
 
   let c;
-  while ((c = source.next()) !== None) {
+  while ((c = source.next()) !== undefined) {
     arr.push(c);
   }
 
@@ -29,18 +28,18 @@ test("Source.next outputs chars in sequence", () => {
 test("Source.peek outputs chars without moving forwards", () => {
   const source = new Source("abc");
 
-  assert.is(source.peek(), Some("a"));
-  assert.is(source.peek(0), Some("a"));
-  assert.is(source.peek(1), Some("b"));
-  assert.is(source.peek(2), Some("c"));
+  assert.is(source.peek(), "a");
+  assert.is(source.peek(0), "a");
+  assert.is(source.peek(1), "b");
+  assert.is(source.peek(2), "c");
 
-  assert.is(source.next(), Some("a"));
+  assert.is(source.next(), "a");
 
-  assert.is(source.peek(), Some("b"));
+  assert.is(source.peek(), "b");
 
   source.next();
 
-  assert.is(source.peek(1), None);
+  assert.is(source.peek(1), undefined);
 });
 
 test("Source.peek throws for negative and non-integer peek amounts", () => {
