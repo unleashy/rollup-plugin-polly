@@ -31,7 +31,9 @@ export default function polly(options: Options = {}): Plugin {
             return false;
           }
 
-          const specs = node.specifiers ?? [];
+          // As per the ESTree spec, `specifiers` is always present
+          // <https://github.com/estree/estree/blob/master/es2015.md#importdeclaration>
+          const specs = node.specifiers!;
           const createParserSpecI = specs.findIndex(
             spec =>
               spec.type === "ImportSpecifier" &&
@@ -45,8 +47,9 @@ export default function polly(options: Options = {}): Plugin {
             createParserSpecI
           ] as types.namedTypes.ImportSpecifier;
 
-          localCreateParserName =
-            createParserSpec.local?.name ?? createParserSpec.imported.name;
+          // As per the ESTree spec, `local` is always present
+          // <https://github.com/estree/estree/blob/master/es2015.md#modulespecifier>
+          localCreateParserName = createParserSpec.local!.name;
 
           if (specs.length <= 1) {
             path.prune();

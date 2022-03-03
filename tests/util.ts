@@ -6,7 +6,7 @@ export async function testBundle(fixturePath: string) {
   const bundle = await rollup({
     input: path.join(__dirname, fixturePath),
     plugins: [polly()],
-    external: ["rollup-plugin-polly"]
+    external: ["rollup-plugin-polly", "path"]
   });
 
   const { output } = await bundle.generate({ format: "cjs" });
