@@ -1,4 +1,4 @@
-import { Span } from "./span";
+import { Span } from "../span";
 
 export type CharClass = string | { from: string; to: string };
 
