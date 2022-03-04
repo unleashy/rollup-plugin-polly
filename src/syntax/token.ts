@@ -28,11 +28,13 @@ export const kinds = Object.freeze({
   name: (value: string) => kind({ name: "name", value })
 });
 
-type KindType<K> = K extends (...args: never[]) => unknown ? ReturnType<K> : K;
-export type Kind = KindType<typeof kinds[keyof typeof kinds]>;
+export type Kinds = typeof kinds;
 
-export class Token {
-  constructor(readonly kind: Kind, readonly span: Span) {}
+type KindType<K> = K extends (...args: never[]) => unknown ? ReturnType<K> : K;
+export type Kind = KindType<Kinds[keyof Kinds]>;
+
+export class Token<K extends Kind = Kind> {
+  constructor(readonly kind: K, readonly span: Span) {}
 
   humanise(): string {
     const text = JSON.stringify(this.span.text);
@@ -43,3 +45,5 @@ export class Token {
     return this.kind === kinds.end;
   }
 }
+
+export type TokenOfKind<K extends keyof Kinds> = Token<KindType<Kinds[K]>>;

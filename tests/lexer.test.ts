@@ -2,7 +2,7 @@ import { test } from "uvu";
 import * as assert from "uvu/assert";
 import { Span } from "../src/span";
 import { Token, kinds } from "../src/syntax";
-import { errorKinds, Lexer, LexerError } from "../src/lexer";
+import { Lexer, LexerError, errorKinds } from "../src/lexer";
 
 interface TestCase {
   name: string;
