@@ -1,9 +1,10 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
+import { PollyError, errorKinds } from "../src/error";
 import { Grammar, Prefix, Suffix, ast } from "../src/syntax";
 import { Span } from "../src/span";
 import { Lexer } from "../src/lexer";
-import { Parser, ParserError, errorKinds } from "../src/parser";
+import { Parser } from "../src/parser";
 
 type TestCase =
   | {
@@ -14,7 +15,7 @@ type TestCase =
   | {
       name: string;
       input: string;
-      error: (makeSpan: (start: number, length: number) => Span) => ParserError;
+      error: (makeSpan: (start: number, length: number) => Span) => PollyError;
     };
 
 const testCases: TestCase[] = [
@@ -133,27 +134,27 @@ const testCases: TestCase[] = [
   {
     name: "fails for malformed primaries",
     input: `A: +`,
-    error: s => new ParserError(errorKinds.badPrimary, s(3, 1))
+    error: s => new PollyError(errorKinds.badPrimary, s(3, 1))
   },
   {
     name: "fails for unclosed groups",
     input: `Unclosed: (a b`,
-    error: s => new ParserError(errorKinds.unclosedGroup, s(10, 1))
+    error: s => new PollyError(errorKinds.unclosedGroup, s(10, 1))
   },
   {
     name: "fails for missing colon after def name",
     input: `Colonless a+ b`,
-    error: s => new ParserError(errorKinds.colonlessDef, s(10, 1))
+    error: s => new PollyError(errorKinds.colonlessDef, s(10, 1))
   },
   {
     name: "fails for def without name",
     input: `: 'hello'`,
-    error: s => new ParserError(errorKinds.namelessDef, s(0, 1))
+    error: s => new PollyError(errorKinds.namelessDef, s(0, 1))
   },
   {
     name: "fails for no defs",
     input: `<any>`,
-    error: s => new ParserError(errorKinds.namelessDef, s(0, 5))
+    error: s => new PollyError(errorKinds.namelessDef, s(0, 5))
   }
 ];
 
@@ -169,7 +170,7 @@ for (const testCase of testCases) {
       try {
         result = parser.parse();
       } catch (e) {
-        if (e instanceof ParserError) {
+        if (e instanceof PollyError) {
           result = e;
         } else {
           throw e;

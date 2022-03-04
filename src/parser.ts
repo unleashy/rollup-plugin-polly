@@ -1,3 +1,4 @@
+import { PollyError, errorKinds } from "./error";
 import { Lexer } from "./lexer";
 import {
   Expr,
@@ -10,7 +11,6 @@ import {
   ast,
   kinds
 } from "./syntax";
-import { Span } from "./span";
 
 export class Parser {
   private readonly lexer: PeekableLexer;
@@ -38,12 +38,12 @@ export class Parser {
   private parseDefinition() {
     const name = this.expectKind(
       "name",
-      token => new ParserError(errorKinds.namelessDef, token.span)
+      token => new PollyError(errorKinds.namelessDef, token.span)
     );
 
     this.expectKind(
       "colon",
-      token => new ParserError(errorKinds.colonlessDef, token.span)
+      token => new PollyError(errorKinds.colonlessDef, token.span)
     );
 
     const expr = this.parseExpr();
@@ -157,7 +157,7 @@ export class Parser {
         return ast.end;
 
       default:
-        throw new ParserError(errorKinds.badPrimary, token.span);
+        throw new PollyError(errorKinds.badPrimary, token.span);
     }
   }
 
@@ -165,7 +165,7 @@ export class Parser {
     const expr = this.parseExpr();
     this.expectKind(
       "close",
-      () => new ParserError(errorKinds.unclosedGroup, openToken.span)
+      () => new PollyError(errorKinds.unclosedGroup, openToken.span)
     );
 
     return ast.group(expr);
@@ -173,7 +173,7 @@ export class Parser {
 
   private expectKind<K extends keyof Kinds>(
     kind: K,
-    makeErr: (badToken: Token) => ParserError
+    makeErr: (badToken: Token) => PollyError
   ): TokenOfKind<K> {
     const token = this.lexer.next();
     if (token.kind.name === kind) {
@@ -181,32 +181,6 @@ export class Parser {
     } else {
       throw makeErr(token);
     }
-  }
-}
-
-function errorKind<Name extends string, Other>(
-  k: { name: Name } & Other
-): { name: Name } & Other {
-  return k;
-}
-
-export const errorKinds = Object.freeze({
-  badPrimary: errorKind({ name: "badPrimary" }),
-  unclosedGroup: errorKind({ name: "unclosedGroup" }),
-  colonlessDef: errorKind({ name: "colonlessDef" }),
-  namelessDef: errorKind({ name: "namelessDef" })
-});
-
-type KindType<K> = K extends (...args: never[]) => unknown ? ReturnType<K> : K;
-export type ParserErrorKind = KindType<
-  typeof errorKinds[keyof typeof errorKinds]
->;
-
-export class ParserError extends Error {
-  constructor(readonly kind: ParserErrorKind, readonly span: Span) {
-    super(`[line ${span.humanise()}] ${kind.name}`);
-
-    this.span = span;
   }
 }
 

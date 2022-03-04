@@ -2,7 +2,7 @@ import type { Plugin } from "rollup";
 import { createFilter } from "@rollup/pluginutils";
 import * as recast from "recast";
 import * as types from "ast-types";
-import { compile } from "./compiler";
+import { JsParser, compile } from "./compiler";
 
 export interface Options {
   include?: string | string[];
@@ -21,7 +21,9 @@ export default function polly(options: Options = {}): Plugin {
     transform(code, id) {
       if (!filter(id)) return null;
 
-      const ast = recast.parse(code, { parser: this, sourceFileName: id });
+      const jsParser: JsParser = source =>
+        recast.parse(source, { parser: this, sourceFileName: id });
+      const ast = jsParser(code);
 
       let localCreateParserName: string | undefined;
       types.visit(ast, {
@@ -75,7 +77,7 @@ export default function polly(options: Options = {}): Plugin {
           }
 
           const grammar = node.quasi.quasis[0].value.raw;
-          const compiled = compile(grammar);
+          const compiled = compile(grammar, jsParser);
 
           path.replace(compiled);
 

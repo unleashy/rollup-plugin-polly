@@ -1,15 +1,16 @@
 import { test } from "uvu";
 import * as assert from "uvu/assert";
 import { Span } from "../src/span";
+import { PollyError, errorKinds } from "../src/error";
 import { Token, kinds } from "../src/syntax";
-import { Lexer, LexerError, errorKinds } from "../src/lexer";
+import { Lexer } from "../src/lexer";
 
 interface TestCase {
   name: string;
   input: string;
   output: (
     makeSpan: (index: number, length: number) => Span
-  ) => (Token | LexerError)[];
+  ) => (Token | PollyError)[];
   expectsError?: boolean;
 }
 
@@ -22,7 +23,7 @@ const testCases: TestCase[] = [
   {
     name: "fails for an unrecognised character",
     input: "§",
-    output: s => [new LexerError(errorKinds.unknownChar("§"), s(0, 1))],
+    output: s => [new PollyError(errorKinds.unknownChar("§"), s(0, 1))],
     expectsError: true
   },
   {
@@ -64,14 +65,14 @@ const testCases: TestCase[] = [
     name: "fails for unknown specials",
     input: "<hello>",
     output: s => [
-      new LexerError(errorKinds.unknownSpecial("<hello>"), s(0, 7))
+      new PollyError(errorKinds.unknownSpecial("<hello>"), s(0, 7))
     ],
     expectsError: true
   },
   {
     name: "fails for unclosed specials",
     input: "<aaaaaaaaaaaaaaaaa",
-    output: s => [new LexerError(errorKinds.unclosedSpecial, s(0, 18))],
+    output: s => [new PollyError(errorKinds.unclosedSpecial, s(0, 18))],
     expectsError: true
   },
   {
@@ -88,7 +89,7 @@ const testCases: TestCase[] = [
   {
     name: "fails for unclosed single-quoted strings",
     input: "'foobar",
-    output: s => [new LexerError(errorKinds.unclosedString, s(0, 7))],
+    output: s => [new PollyError(errorKinds.unclosedString, s(0, 7))],
     expectsError: true
   },
   {
@@ -104,14 +105,14 @@ const testCases: TestCase[] = [
   {
     name: "fails for unclosed double-quoted strings",
     input: `"sup`,
-    output: s => [new LexerError(errorKinds.unclosedString, s(0, 4))],
+    output: s => [new PollyError(errorKinds.unclosedString, s(0, 4))],
     expectsError: true
   },
 
   {
     name: "fails for unclosed double-quoted strings after escape",
     input: `"woops\\`,
-    output: s => [new LexerError(errorKinds.unclosedString, s(0, 7))],
+    output: s => [new PollyError(errorKinds.unclosedString, s(0, 7))],
     expectsError: true
   },
   {
@@ -128,25 +129,25 @@ const testCases: TestCase[] = [
   {
     name: "fails for missing open brace in unicode escapes",
     input: `"\\u41}"`,
-    output: s => [new LexerError(errorKinds.badUnicodeEscape, s(1, 3))],
+    output: s => [new PollyError(errorKinds.badUnicodeEscape, s(1, 3))],
     expectsError: true
   },
   {
     name: "fails for missing close brace in unicode escapes",
     input: `"\\u{41 `,
-    output: s => [new LexerError(errorKinds.badUnicodeEscape, s(1, 6))],
+    output: s => [new PollyError(errorKinds.badUnicodeEscape, s(1, 6))],
     expectsError: true
   },
   {
     name: "fails for non-hex characters in unicode escapes",
     input: `"\\u{-}"`,
-    output: s => [new LexerError(errorKinds.badUnicodeEscape, s(1, 4))],
+    output: s => [new PollyError(errorKinds.badUnicodeEscape, s(1, 4))],
     expectsError: true
   },
   {
     name: "fails for invalid code points in unicode escapes",
     input: `"\\u{FFFFFF}"`,
-    output: s => [new LexerError(errorKinds.badUnicodeEscape, s(1, 10))],
+    output: s => [new PollyError(errorKinds.badUnicodeEscape, s(1, 10))],
     expectsError: true
   },
   {
@@ -173,13 +174,13 @@ const testCases: TestCase[] = [
   {
     name: "fails for unclosed character range",
     input: String.raw`[abcd`,
-    output: s => [new LexerError(errorKinds.unclosedCharacterRange, s(0, 5))],
+    output: s => [new PollyError(errorKinds.unclosedCharacterRange, s(0, 5))],
     expectsError: true
   },
   {
     name: "fails for unclosed character range after dash",
     input: String.raw`[0-`,
-    output: s => [new LexerError(errorKinds.unclosedCharacterRange, s(0, 3))],
+    output: s => [new PollyError(errorKinds.unclosedCharacterRange, s(0, 3))],
     expectsError: true
   },
   {
@@ -206,7 +207,7 @@ for (const testCase of testCases) {
         actual.push(token);
         if (token.isEnd) break;
       } catch (e) {
-        if (testCase.expectsError && e instanceof LexerError) {
+        if (testCase.expectsError && e instanceof PollyError) {
           actual.push(e);
           break;
         } else {

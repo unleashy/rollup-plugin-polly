@@ -9,7 +9,7 @@ test("Token.humanise returns an appropriate representation", () => {
   assert.is(token.humanise(), `end:1 ("foo")`);
 });
 
-test("Token.isEnd returns true if the token is of kind end", () => {
+test("Token.isEnd returns true if the token is of errorKind end", () => {
   assert.is(new Token(kinds.end, new Span("", 0, 0)).isEnd, true);
   assert.is(new Token(kinds.colon, new Span("", 0, 0)).isEnd, false);
 });

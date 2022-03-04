@@ -1,6 +1,6 @@
+import { PollyError, errorKinds } from "./error";
 import { Source } from "./source";
 import { Token, kinds, Kind, CharClass } from "./syntax";
-import { Span } from "./span";
 
 export class Lexer {
   private readonly source: Source;
@@ -39,7 +39,7 @@ export class Lexer {
       case ")": return this.nextSimple(kinds.close);
 
       default:
-        throw new LexerError(
+        throw new PollyError(
           errorKinds.unknownChar(c),
           this.source.popSpan()
         );
@@ -79,7 +79,7 @@ export class Lexer {
         case "<end>": return kinds.specialEnd;
 
         default:
-          throw new LexerError(
+          throw new PollyError(
             reachedEnd
               ? errorKinds.unclosedSpecial
               : errorKinds.unknownSpecial(span.text),
@@ -96,7 +96,7 @@ export class Lexer {
 
     const span = this.source.popSpan();
     if (reachedEnd) {
-      throw new LexerError(errorKinds.unclosedString, span);
+      throw new PollyError(errorKinds.unclosedString, span);
     }
 
     const value = span.text.slice(1, -1);
@@ -121,7 +121,7 @@ export class Lexer {
           break loop;
 
         case undefined:
-          throw new LexerError(
+          throw new PollyError(
             errorKinds.unclosedString,
             this.source.popSpan()
           );
@@ -154,7 +154,7 @@ export class Lexer {
             break loop;
 
           case undefined:
-            throw new LexerError(
+            throw new PollyError(
               errorKinds.unclosedCharacterRange,
               this.source.popSpan()
             );
@@ -177,7 +177,7 @@ export class Lexer {
 
           switch (c) {
             case undefined:
-              throw new LexerError(
+              throw new PollyError(
                 errorKinds.unclosedCharacterRange,
                 this.source.popSpan()
               );
@@ -213,7 +213,7 @@ export class Lexer {
     this.source.popSpan(); // get rid of the escape span
 
     if (cooked === undefined) {
-      throw new LexerError(errorKinds.unclosedString, this.source.popSpan());
+      throw new PollyError(errorKinds.unclosedString, this.source.popSpan());
     } else {
       return cooked;
     }
@@ -221,7 +221,7 @@ export class Lexer {
 
   private nextUnicodeEscape(): string {
     if (this.source.next() !== "{") {
-      throw new LexerError(errorKinds.badUnicodeEscape, this.source.popSpan());
+      throw new PollyError(errorKinds.badUnicodeEscape, this.source.popSpan());
     }
 
     let codePointHex = "";
@@ -232,7 +232,7 @@ export class Lexer {
       if (hex !== undefined && /[0-9A-Fa-f]/.test(hex)) {
         codePointHex += hex;
       } else {
-        throw new LexerError(
+        throw new PollyError(
           errorKinds.badUnicodeEscape,
           this.source.popSpan()
         );
@@ -242,7 +242,7 @@ export class Lexer {
     try {
       return String.fromCodePoint(Number.parseInt(codePointHex, 16));
     } catch {
-      throw new LexerError(errorKinds.badUnicodeEscape, this.source.popSpan());
+      throw new PollyError(errorKinds.badUnicodeEscape, this.source.popSpan());
     }
   }
 
@@ -277,34 +277,5 @@ export class Lexer {
       if (c === undefined) return true;
       if (c === needle) return false;
     }
-  }
-}
-
-function errorKind<Name extends string, Other>(
-  k: { name: Name } & Other
-): { name: Name } & Other {
-  return k;
-}
-
-export const errorKinds = Object.freeze({
-  unknownChar: (char: string) => errorKind({ name: "unknownChar", char }),
-  unknownSpecial: (special: string) =>
-    errorKind({ name: "unknownSpecial", special }),
-  unclosedSpecial: errorKind({ name: "unclosedSpecial" }),
-  unclosedString: errorKind({ name: "unclosedString" }),
-  unclosedCharacterRange: errorKind({ name: "unclosedCharacterRange" }),
-  badUnicodeEscape: errorKind({ name: "badUnicodeEscape" })
-});
-
-type KindType<K> = K extends (...args: never[]) => unknown ? ReturnType<K> : K;
-export type LexerErrorKind = KindType<
-  typeof errorKinds[keyof typeof errorKinds]
->;
-
-export class LexerError extends Error {
-  constructor(readonly kind: LexerErrorKind, readonly span: Span) {
-    super(`[line ${span.humanise()}] ${kind.name}`);
-
-    this.span = span;
   }
 }
