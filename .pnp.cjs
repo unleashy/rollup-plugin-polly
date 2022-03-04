@@ -44,6 +44,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
+            ["ts-dedent", "npm:2.2.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"],\
             ["uvu", "npm:0.5.3"]\
@@ -2290,6 +2291,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
+            ["ts-dedent", "npm:2.2.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"],\
             ["uvu", "npm:0.5.3"]\
@@ -2656,6 +2658,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/trim-newlines-npm-3.0.1-22f1f216de-b530f3fadf.zip/node_modules/trim-newlines/",\
           "packageDependencies": [\
             ["trim-newlines", "npm:3.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["ts-dedent", [\
+        ["npm:2.2.0", {\
+          "packageLocation": "./.yarn/cache/ts-dedent-npm-2.2.0-00389a0e6b-93ed8f7878.zip/node_modules/ts-dedent/",\
+          "packageDependencies": [\
+            ["ts-dedent", "npm:2.2.0"]\
           ],\
           "linkType": "HARD"\
         }]\

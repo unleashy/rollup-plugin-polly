@@ -139,7 +139,7 @@ export class Parser {
     const kind = token.kind;
     switch (kind.name) {
       case "name":
-        return ast.name(kind.value);
+        return ast.name(kind.value, token.span);
 
       case "open":
         return this.parseGroup(token);

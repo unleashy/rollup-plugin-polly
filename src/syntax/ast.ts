@@ -1,3 +1,4 @@
+import { Span } from "../span";
 import { CharClass } from "./token";
 
 export interface Grammar<Root extends string = string> {
@@ -53,6 +54,7 @@ export interface ExprSuffix {
 export interface ExprName {
   kind: "name";
   value: string;
+  span: Span;
 }
 
 export interface ExprGroup {
@@ -103,7 +105,11 @@ export const ast = {
     suffix
   }),
 
-  name: (value: string): ExprName => ({ kind: "name", value }),
+  name: (value: string, span: Span): ExprName => ({
+    kind: "name",
+    value,
+    span
+  }),
   group: (value: Expr): ExprGroup => ({ kind: "group", value }),
   string: (value: string): ExprString => ({ kind: "string", value }),
   charClass: (value: CharClass[]): ExprCharClass => ({
