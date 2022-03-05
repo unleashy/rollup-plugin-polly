@@ -1,6 +1,6 @@
 # rollup-plugin-polly
 
-Compile-time parser generator for Rollup.
+Compile-time parser generator for Rollup and Vite.
 
 ## Usage
 

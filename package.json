@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "author": "Emmanuelle Fernandes",
   "homepage": "https://github.com/unleashy/rollup-plugin-polly",
-  "description": "Compile-time parser generator for Rollup",
+  "description": "Compile-time parser generator for Rollup and Vite",
   "keywords": [
     "rollup-plugin"
   ],
