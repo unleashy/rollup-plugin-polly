@@ -11,7 +11,7 @@ export async function testBundle(fixturePath: string) {
 
   const { output } = await bundle.generate({ format: "cjs" });
   const [{ code }] = output;
-  const module = { exports: {} };
+  const module: { exports: Record<string, unknown> } = { exports: {} };
   const cwd = process.cwd().replace(/\\/g, "\\\\");
   const func = new Function(
     "module",

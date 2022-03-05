@@ -7,8 +7,23 @@ import { Prefix, Suffix, visit, Visitors } from "./syntax";
 
 const PRELUDE = `
 const $fail = NaN;
+
 function $isFail(r) {
   return Number.isNaN(r);
+}
+
+const $ruleCache = new Map();
+
+function $rule(name, f) {
+  return i => {
+    let cached = $ruleCache.get(name);
+    if (cached === undefined) {
+      cached = f();
+      $ruleCache.set(name, cached);
+    }
+    
+    return cached(i);
+  };
 }
 `;
 
@@ -165,7 +180,10 @@ export function compile(grammar: string): types.FunctionExpression {
         throw new PollyError(errorKinds.unresolvedName(name.value), name.span);
       }
 
-      return b.callExpression(b.identifier(name.value), []);
+      return b.callExpression(b.identifier("$rule"), [
+        b.literal(name.value),
+        b.identifier(name.value)
+      ]);
     },
 
     visitGroup(ast, next) {
@@ -219,14 +237,18 @@ export function compile(grammar: string): types.FunctionExpression {
     pieces.push(...recast.parse(PIECES[piece]).program.body);
   }
 
-  // return !$isFail(ROOT()(0));
+  // return !$isFail($rule("ROOT", ROOT)(0));
   const kickoff = b.returnStatement(
     b.unaryExpression(
       "!",
       b.callExpression(b.identifier("$isFail"), [
-        b.callExpression(b.callExpression(b.identifier(grammarAst.root), []), [
-          b.literal(0)
-        ])
+        b.callExpression(
+          b.callExpression(b.identifier("$rule"), [
+            b.literal(grammarAst.root),
+            b.identifier(grammarAst.root)
+          ]),
+          [b.literal(0)]
+        )
       ])
     )
   );
