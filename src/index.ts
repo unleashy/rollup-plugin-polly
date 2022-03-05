@@ -2,7 +2,7 @@ import type { Plugin } from "rollup";
 import { createFilter } from "@rollup/pluginutils";
 import * as recast from "recast";
 import * as types from "ast-types";
-import { compile } from "./compiler";
+import { compile as actualCompile } from "./compiler";
 
 export interface Options {
   include?: string | string[];
@@ -14,6 +14,10 @@ export default function polly(options: Options = {}): Plugin {
     options.include ?? "**/*.{js,jsx,ts,tsx}",
     options.exclude
   );
+
+  const compile =
+    (options as { __secret__compilerMock?: typeof actualCompile })
+      .__secret__compilerMock ?? actualCompile;
 
   return {
     name: "polly",

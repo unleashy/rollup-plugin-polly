@@ -5,9 +5,7 @@ import { testBundle } from "./util";
 let parser: (input: string) => boolean;
 
 test.before(async () => {
-  const { module, code } = await testBundle("fixtures/integration.js");
-  console.log(code);
-
+  const { module } = await testBundle("fixtures/integration.js");
   parser = module.exports.parser as typeof parser;
 });
 

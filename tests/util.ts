@@ -2,10 +2,15 @@ import { rollup } from "rollup";
 import * as path from "path";
 import polly from "../src";
 
-export async function testBundle(fixturePath: string) {
+export async function testBundle(
+  fixturePath: string,
+  options?: { compilerMock?: unknown }
+) {
   const bundle = await rollup({
     input: path.join(__dirname, fixturePath),
-    plugins: [polly()],
+    plugins: [
+      polly({ __secret__compilerMock: options?.compilerMock } as never)
+    ],
     external: ["rollup-plugin-polly", "path"]
   });
 

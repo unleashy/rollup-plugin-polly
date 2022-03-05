@@ -201,6 +201,17 @@ const testCases: TestCase[] = [
     `,
     input: "abbaaabbbc",
     output: () => true
+  },
+  {
+    name: "encodes rule names without conflicts",
+    grammar: `
+      str: "foo" str'
+      str': "bar" strp
+      strp: "baz" str1
+      str1: "bux"
+    `,
+    input: "foobarbazbux",
+    output: () => true
   }
 ];
 

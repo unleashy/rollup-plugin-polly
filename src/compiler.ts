@@ -6,120 +6,38 @@ import { Parser } from "./parser";
 import { Prefix, Suffix, visit, Visitors } from "./syntax";
 
 const PRELUDE = `
-const $fail = NaN;
+let i = 0;
 
-function $isFail(r) {
-  return Number.isNaN(r);
+function reset(to) {
+  i = to;
+  return false;
 }
 
-const $ruleCache = new Map();
-
-function $rule(name, f) {
-  return i => {
-    let cached = $ruleCache.get(name);
-    if (cached === undefined) {
-      cached = f();
-      $ruleCache.set(name, cached);
-    }
-    
-    return cached(i);
-  };
+function advance(by) {
+  i += by;
+  return true;
 }
 `;
 
 const PIECES = {
-  or: `
-    function $or(...exprs) {
-      return i => {
-        let r;
-        for (const expr of exprs) {
-          if (!$isFail(r = expr(i))) return r;
-        }
-        
-        return $fail;
-      };
-    }
-  `,
-
-  seq: `
-    function $seq(...exprs) {
-      return i => {
-        let r = 0;
-        for (const expr of exprs) {
-          if ($isFail(r += expr(r + i))) return $fail;
-        }
-        return r;
-      };
-    }
-  `,
-
-  and: `
-    function $and(expr) {
-      return i => $isFail(expr(i)) ? $fail : 0;
-    }
-  `,
-
-  not: `
-    function $not(expr) {
-      return i => $isFail(expr(i)) ? 0 : $fail;
-    }
-  `,
-
-  maybe: `
-    function $maybe(expr) {
-      return i => {
-        const r = expr(i);
-        return !$isFail(r) ? r : 0;
-      };
-    }
-  `,
-
-  many: `
-    function $many(expr) {
-      return i => {
-        let r = 0;
-        let v;
-        while (!$isFail(v = expr(r + i))) {
-          r += v;
-        }
-        return r;
-      };
-    }
-  `,
-
-  many1: `
-    function $many1(expr) {
-      return i => {
-        let r = expr(i);
-        if ($isFail(r)) return $fail;
-      
-        let v;
-        while (!$isFail(v = expr(r + i))) {
-          r += v;
-        }
-        return r;
-      };
-    }
-  `,
-
   any: `
-    function $any(i) {
-      return i < input.length ? 1 : $fail;
+    function any() {
+      return i < input.length ? advance(1) : false;
     }
   `,
   end: `
-    function $end(i) {
-      return i >= input.length ? 0 : $fail;
+    function end() {
+      return i >= input.length ? true : false;
     }
   `,
   str: `
-    function $str(s) {
-      return i => input.startsWith(s, i) ? s.length : $fail;
+    function str(s) {
+      return input.startsWith(s, i) ? advance(s.length) : false;
     }
   `,
   charClass: `
-    function $charClass(rgx) {
-      return i => rgx.test(input.slice(i)) ? 1 : $fail; 
+    function charClass(rgx) {
+      return rgx.test(input.slice(i)) ? advance(1) : false;
     }
   `
 };
@@ -127,51 +45,278 @@ const PIECES = {
 export function compile(grammar: string): types.FunctionExpression {
   const grammarAst = new Parser(new Lexer(grammar)).parse();
   const requiredPieces = new Set<keyof typeof PIECES>();
+  const ruleIdent = (name: string) =>
+    b.identifier(`$${name.replace("'", "$p")}`);
 
-  const visitors: Visitors<types.CallExpression | types.Identifier> = {
+  const visitors: Visitors<
+    | types.ArrowFunctionExpression
+    | types.CallExpression
+    | types.LogicalExpression
+  > = {
     visitChoice(ast, next) {
-      requiredPieces.add("or");
+      /*
+        Passes if any choice passes (in order).
+          () => {
+            const saved = i, expr3 = () => child3;
+            if (child1()) return true;
+            if (child2()) return true;
+            if (expr3()) return true;
+            ...
+            if (child10()) return true;
+            return false;
+          }
+       */
 
-      return b.callExpression(
-        b.identifier("$or"),
-        ast.value.map(expr => next(expr))
+      const children = ast.value.map(next);
+      return b.arrowFunctionExpression(
+        [],
+        b.blockStatement([
+          b.variableDeclaration("const", [
+            b.variableDeclarator(b.identifier("saved"), b.identifier("i")),
+            ...children.flatMap((child, i) =>
+              child.type === "ArrowFunctionExpression"
+                ? [b.variableDeclarator(b.identifier(`expr${i}`), child)]
+                : []
+            )
+          ]),
+          ...children.map((child, i) =>
+            b.ifStatement(
+              child.type === "ArrowFunctionExpression"
+                ? b.callExpression(b.identifier(`expr${i}`), [])
+                : child,
+              b.returnStatement(b.literal(true))
+            )
+          ),
+          b.returnStatement(b.literal(false))
+        ])
       );
     },
 
     visitSequence(ast, next) {
-      requiredPieces.add("seq");
+      /*
+        Passes if all in sequence pass, backtracking otherwise.
+          () => {
+            const saved = i, expr3 = () => child3;
+            if (!child1()) return false;
+            if (!child2()) return reset(saved);
+            if (!expr3()) return reset(saved);
+            ...
+            if (!child10()) return reset(saved);
+            return true;
+          }
+       */
 
-      return b.callExpression(
-        b.identifier("$seq"),
-        ast.value.map(expr => next(expr))
+      const children = ast.value.map(next);
+      return b.arrowFunctionExpression(
+        [],
+        b.blockStatement([
+          b.variableDeclaration("const", [
+            b.variableDeclarator(b.identifier("saved"), b.identifier("i")),
+            ...children.flatMap((child, i) =>
+              child.type === "ArrowFunctionExpression"
+                ? [b.variableDeclarator(b.identifier(`expr${i}`), child)]
+                : []
+            )
+          ]),
+          ...children.map((child, i) =>
+            b.ifStatement(
+              b.unaryExpression(
+                "!",
+                child.type === "ArrowFunctionExpression"
+                  ? b.callExpression(b.identifier(`expr${i}`), [])
+                  : child
+              ),
+              b.returnStatement(
+                i === 0
+                  ? b.literal(false)
+                  : b.callExpression(b.identifier("reset"), [
+                      b.identifier("saved")
+                    ])
+              )
+            )
+          ),
+          b.returnStatement(b.literal(true))
+        ])
       );
     },
 
     visitPrefix(node, next) {
+      const child = next(node.expr);
+      const childAst =
+        child.type === "ArrowFunctionExpression"
+          ? b.callExpression(child, [])
+          : child;
       switch (node.prefix) {
         case Prefix.and:
-          requiredPieces.add("and");
-          return b.callExpression(b.identifier("$and"), [next(node.expr)]);
+          /*
+            Passes if child passes, without consuming any input.
+              () => {
+                const saved = i;
+                if (!child()) return false;
+                return !reset(saved);
+              }
+              () => {
+                const saved = i;
+                if (!(() => child)()) return false;
+                return !reset(saved);
+              }
+           */
+          return b.arrowFunctionExpression(
+            [],
+            b.blockStatement([
+              b.variableDeclaration("const", [
+                b.variableDeclarator(b.identifier("saved"), b.identifier("i"))
+              ]),
+              b.ifStatement(
+                b.unaryExpression("!", childAst),
+                b.returnStatement(b.literal(false))
+              ),
+              b.returnStatement(
+                b.unaryExpression(
+                  "!",
+                  b.callExpression(b.identifier("reset"), [
+                    b.identifier("saved")
+                  ])
+                )
+              )
+            ])
+          );
 
         case Prefix.not:
-          requiredPieces.add("not");
-          return b.callExpression(b.identifier("$not"), [next(node.expr)]);
+          /*
+            Passes if child doesn't pass, without consuming any input.
+              () => {
+                const saved = i;
+                if (!child()) return true;
+                return reset(saved);
+              }
+              () => {
+                const saved = i;
+                if (!(() => child)()) return true;
+                return reset(saved);
+              }
+           */
+          return b.arrowFunctionExpression(
+            [],
+            b.blockStatement([
+              b.variableDeclaration("const", [
+                b.variableDeclarator(b.identifier("saved"), b.identifier("i"))
+              ]),
+              b.ifStatement(
+                b.unaryExpression("!", childAst),
+                b.returnStatement(b.literal(true))
+              ),
+              b.returnStatement(
+                b.callExpression(b.identifier("reset"), [b.identifier("saved")])
+              )
+            ])
+          );
       }
     },
 
     visitSuffix(node, next) {
+      const child = next(node.expr);
       switch (node.suffix) {
         case Suffix.zeroOrOne:
-          requiredPieces.add("maybe");
-          return b.callExpression(b.identifier("$maybe"), [next(node.expr)]);
+          /*
+            Always passes. Ignores the result of child.
+              child() || true;
+              (() => child)() || true;
+           */
+          return b.logicalExpression(
+            "||",
+            child.type === "ArrowFunctionExpression"
+              ? b.callExpression(child, [])
+              : child,
+            b.literal(true)
+          );
 
         case Suffix.zeroOrMore:
-          requiredPieces.add("many");
-          return b.callExpression(b.identifier("$many"), [next(node.expr)]);
+          /*
+            Always passes. Ignores all the results of repeating child.
+              () => {
+                while (child()) {}
+                return true;
+              }
+              () => {
+                const expr = () => child;
+                while (expr()) {}
+                return true;
+              }
+           */
+          if (child.type === "ArrowFunctionExpression") {
+            return b.arrowFunctionExpression(
+              [],
+              b.blockStatement([
+                b.variableDeclaration("const", [
+                  b.variableDeclarator(b.identifier("expr"), child)
+                ]),
+                b.whileStatement(
+                  b.callExpression(b.identifier("expr"), []),
+                  b.noop()
+                ),
+                b.returnStatement(b.literal(true))
+              ])
+            );
+          } else {
+            return b.arrowFunctionExpression(
+              [],
+              b.blockStatement([
+                b.whileStatement(child, b.noop()),
+                b.returnStatement(b.literal(true))
+              ])
+            );
+          }
 
         case Suffix.oneOrMore:
-          requiredPieces.add("many1");
-          return b.callExpression(b.identifier("$many1"), [next(node.expr)]);
+          /*
+            Passes if child passes once.
+              () => {
+                if (!child()) return false;
+                while (child()) {}
+                return true;
+              }
+              () => {
+                const expr = () => child;
+                if (!expr()) return false;
+                while (expr()) {}
+                return true;
+              }
+           */
+          if (child.type === "ArrowFunctionExpression") {
+            return b.arrowFunctionExpression(
+              [],
+              b.blockStatement([
+                b.variableDeclaration("const", [
+                  b.variableDeclarator(b.identifier("expr"), child)
+                ]),
+                b.ifStatement(
+                  b.unaryExpression(
+                    "!",
+                    b.callExpression(b.identifier("expr"), [])
+                  ),
+                  b.returnStatement(b.literal(false))
+                ),
+                b.whileStatement(
+                  b.callExpression(b.identifier("expr"), []),
+                  b.noop()
+                ),
+                b.returnStatement(b.literal(true))
+              ])
+            );
+          } else {
+            return b.arrowFunctionExpression(
+              [],
+              b.blockStatement([
+                b.ifStatement(
+                  b.unaryExpression("!", child),
+                  b.returnStatement(b.literal(false))
+                ),
+                b.whileStatement(child, b.noop()),
+                b.returnStatement(b.literal(true))
+              ])
+            );
+          }
       }
     },
 
@@ -180,10 +325,7 @@ export function compile(grammar: string): types.FunctionExpression {
         throw new PollyError(errorKinds.unresolvedName(name.value), name.span);
       }
 
-      return b.callExpression(b.identifier("$rule"), [
-        b.literal(name.value),
-        b.identifier(name.value)
-      ]);
+      return b.callExpression(ruleIdent(name.value), []);
     },
 
     visitGroup(ast, next) {
@@ -192,7 +334,7 @@ export function compile(grammar: string): types.FunctionExpression {
 
     visitString(str) {
       requiredPieces.add("str");
-      return b.callExpression(b.identifier("$str"), [b.literal(str.value)]);
+      return b.callExpression(b.identifier("str"), [b.literal(str.value)]);
     },
 
     visitCharClass(charClass) {
@@ -202,19 +344,19 @@ export function compile(grammar: string): types.FunctionExpression {
         .map(it => (typeof it === "object" ? `${it.from}-${it.to}` : it))
         .join("");
 
-      return b.callExpression(b.identifier("$charClass"), [
+      return b.callExpression(b.identifier("charClass"), [
         b.literal(new RegExp(`^[${regexClass}]`))
       ]);
     },
 
     visitAny() {
       requiredPieces.add("any");
-      return b.identifier("$any");
+      return b.callExpression(b.identifier("any"), []);
     },
 
     visitEnd() {
       requiredPieces.add("end");
-      return b.identifier("$end");
+      return b.callExpression(b.identifier("end"), []);
     }
   };
 
@@ -222,10 +364,14 @@ export function compile(grammar: string): types.FunctionExpression {
 
   for (const [name, expr] of Object.entries(grammarAst.defs)) {
     const body = visit(expr, visitors);
+
+    // function $name() { [body] }
     const fn = b.functionDeclaration(
-      b.identifier(name),
+      ruleIdent(name),
       [],
-      b.blockStatement([b.returnStatement(body)])
+      body.type === "ArrowFunctionExpression"
+        ? (body.body as types.BlockStatement)
+        : b.blockStatement([b.returnStatement(body)])
     );
 
     ruleFns.push(fn);
@@ -237,20 +383,9 @@ export function compile(grammar: string): types.FunctionExpression {
     pieces.push(...recast.parse(PIECES[piece]).program.body);
   }
 
-  // return !$isFail($rule("ROOT", ROOT)(0));
+  // return $root();
   const kickoff = b.returnStatement(
-    b.unaryExpression(
-      "!",
-      b.callExpression(b.identifier("$isFail"), [
-        b.callExpression(
-          b.callExpression(b.identifier("$rule"), [
-            b.literal(grammarAst.root),
-            b.identifier(grammarAst.root)
-          ]),
-          [b.literal(0)]
-        )
-      ])
-    )
+    b.callExpression(ruleIdent(grammarAst.root), [])
   );
 
   return b.functionExpression(
