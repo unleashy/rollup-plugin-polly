@@ -44,6 +44,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
+            ["terser", "npm:5.12.0"],\
             ["ts-dedent", "npm:2.2.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"],\
@@ -571,6 +572,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["buffer-from", [\
+        ["npm:1.1.2", {\
+          "packageLocation": "./.yarn/cache/buffer-from-npm-1.1.2-03d2f20d7e-0448524a56.zip/node_modules/buffer-from/",\
+          "packageDependencies": [\
+            ["buffer-from", "npm:1.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["builtin-modules", [\
         ["npm:3.2.0", {\
           "packageLocation": "./.yarn/cache/builtin-modules-npm-3.2.0-ef7266e931-0265aa1ba7.zip/node_modules/builtin-modules/",\
@@ -735,6 +745,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["commander", [\
+        ["npm:2.20.3", {\
+          "packageLocation": "./.yarn/cache/commander-npm-2.20.3-d8dcbaa39b-ab8c07884e.zip/node_modules/commander/",\
+          "packageDependencies": [\
+            ["commander", "npm:2.20.3"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:4.1.1", {\
           "packageLocation": "./.yarn/cache/commander-npm-4.1.1-22a0fe921b-d7b9913ff9.zip/node_modules/commander/",\
           "packageDependencies": [\
@@ -2291,6 +2308,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
             ["rollup", "npm:2.68.0"],\
+            ["terser", "npm:5.12.0"],\
             ["ts-dedent", "npm:2.2.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
             ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"],\
@@ -2462,6 +2480,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["source-map-support", [\
+        ["npm:0.5.21", {\
+          "packageLocation": "./.yarn/cache/source-map-support-npm-0.5.21-09ca99e250-43e98d700d.zip/node_modules/source-map-support/",\
+          "packageDependencies": [\
+            ["source-map-support", "npm:0.5.21"],\
+            ["buffer-from", "npm:1.1.2"],\
+            ["source-map", "npm:0.6.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["spdx-correct", [\
         ["npm:3.1.1", {\
           "packageLocation": "./.yarn/cache/spdx-correct-npm-3.1.1-47f574c27a-77ce438344.zip/node_modules/spdx-correct/",\
@@ -2607,6 +2636,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["minizlib", "npm:2.1.2"],\
             ["mkdirp", "npm:1.0.4"],\
             ["yallist", "npm:4.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["terser", [\
+        ["npm:5.12.0", {\
+          "packageLocation": "./.yarn/cache/terser-npm-5.12.0-43da67f7be-1d0426bcb6.zip/node_modules/terser/",\
+          "packageDependencies": [\
+            ["terser", "npm:5.12.0"],\
+            ["acorn", "npm:8.7.0"],\
+            ["commander", "npm:2.20.3"],\
+            ["source-map", "npm:0.7.3"],\
+            ["source-map-support", "npm:0.5.21"]\
           ],\
           "linkType": "HARD"\
         }]\

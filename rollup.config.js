@@ -1,5 +1,6 @@
 import sucrase from "@rollup/plugin-sucrase";
 import resolve from "@rollup/plugin-node-resolve";
+import { minify } from "terser";
 import pkg from "./package.json";
 
 export default {
@@ -25,6 +26,16 @@ export default {
     sucrase({
       exclude: ["node_modules/**"],
       transforms: ["typescript"]
-    })
+    }),
+    {
+      name: "terser",
+      async renderChunk(code, chunk, outputOptions) {
+        return minify(code, {
+          module: outputOptions.format === "es",
+          toplevel: outputOptions.format === "cjs",
+          sourceMap: true
+        });
+      }
+    }
   ]
 };
