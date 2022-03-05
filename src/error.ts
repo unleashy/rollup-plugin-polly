@@ -20,7 +20,12 @@ export const errorKinds = Object.freeze({
   badPrimary: errorKind({ name: "badPrimary" }),
   unclosedGroup: errorKind({ name: "unclosedGroup" }),
   colonlessDef: errorKind({ name: "colonlessDef" }),
-  namelessDef: errorKind({ name: "namelessDef" })
+  namelessDef: errorKind({ name: "namelessDef" }),
+
+  // compiler errors
+  unresolvedName: (value: string) =>
+    errorKind({ name: "unresolvedName", value }),
+  malformedGrammar: errorKind({ name: "malformedGrammar" })
 });
 
 type KindType<K> = K extends (...args: never[]) => unknown ? ReturnType<K> : K;

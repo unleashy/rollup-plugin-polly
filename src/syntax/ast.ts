@@ -120,3 +120,55 @@ export const ast = {
   any: { kind: "any" } as ExprAny,
   end: { kind: "end" } as ExprEnd
 };
+
+export type VisitorNext<R> = (expr: Expr) => R;
+export type VisitorFn<T extends Expr, R> = (expr: T, next: VisitorNext<R>) => R;
+
+export interface Visitors<R> {
+  visitChoice: VisitorFn<ExprChoice, R>;
+  visitSequence: VisitorFn<ExprSequence, R>;
+  visitPrefix: VisitorFn<ExprPrefix, R>;
+  visitSuffix: VisitorFn<ExprSuffix, R>;
+  visitName: VisitorFn<ExprName, R>;
+  visitGroup: VisitorFn<ExprGroup, R>;
+  visitString: VisitorFn<ExprString, R>;
+  visitCharClass: VisitorFn<ExprCharClass, R>;
+  visitAny: VisitorFn<ExprAny, R>;
+  visitEnd: VisitorFn<ExprEnd, R>;
+}
+
+export function visit<R>(expr: Expr, visitors: Visitors<R>): R {
+  const visitorNext: VisitorNext<R> = next => visit(next, visitors);
+
+  switch (expr.kind) {
+    case "choice":
+      return visitors.visitChoice(expr, visitorNext);
+
+    case "sequence":
+      return visitors.visitSequence(expr, visitorNext);
+
+    case "prefix":
+      return visitors.visitPrefix(expr, visitorNext);
+
+    case "suffix":
+      return visitors.visitSuffix(expr, visitorNext);
+
+    case "name":
+      return visitors.visitName(expr, visitorNext);
+
+    case "group":
+      return visitors.visitGroup(expr, visitorNext);
+
+    case "string":
+      return visitors.visitString(expr, visitorNext);
+
+    case "charClass":
+      return visitors.visitCharClass(expr, visitorNext);
+
+    case "any":
+      return visitors.visitAny(expr, visitorNext);
+
+    case "end":
+      return visitors.visitEnd(expr, visitorNext);
+  }
+}

@@ -30,7 +30,8 @@
   "scripts": {
     "build": "del-cli dist && tsc && rollup -c",
     "test": "uvu -r ts-node/register tests -i fixtures",
-    "test:cov": "c8 --include=src -r text -r html yarn test"
+    "test:cov": "c8 --include=src -r text -r html yarn test",
+    "test:single": "ts-node"
   },
   "packageManager": "yarn@3.2.0",
   "dependencies": {
