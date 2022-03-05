@@ -21,10 +21,11 @@ Then use it as such:
 import { createParser } from "rollup-plugin-polly";
 
 const myParser = createParser`
-  Answer: '42'
+  Answer: '42' <end>
 `;
 
-myParser("42");
+myParser("42"); // true
+myParser("55"); // false
 ```
 
 ## Parser specification grammar
