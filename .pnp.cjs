@@ -43,7 +43,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fast-check", "npm:2.22.0"],\
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
-            ["rollup", "npm:2.68.0"],\
+            ["rollup", "npm:2.69.1"],\
             ["terser", "npm:5.12.0"],\
             ["ts-dedent", "npm:2.2.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\
@@ -202,7 +202,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["deepmerge", "npm:4.2.2"],\
             ["is-module", "npm:1.0.0"],\
             ["resolve", "patch:resolve@npm%3A1.22.0#~builtin<compat/resolve>::version=1.22.0&hash=07638b"],\
-            ["rollup", "npm:2.68.0"]\
+            ["rollup", "npm:2.69.1"]\
           ],\
           "packagePeers": [\
             "@types/rollup",\
@@ -225,7 +225,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@rollup/plugin-sucrase", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:4.0.2"],\
             ["@rollup/pluginutils", "npm:4.1.2"],\
             ["@types/rollup", null],\
-            ["rollup", "npm:2.68.0"],\
+            ["rollup", "npm:2.69.1"],\
             ["sucrase", "npm:3.20.3"]\
           ],\
           "packagePeers": [\
@@ -260,7 +260,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/rollup", null],\
             ["estree-walker", "npm:1.0.1"],\
             ["picomatch", "npm:2.3.1"],\
-            ["rollup", "npm:2.68.0"]\
+            ["rollup", "npm:2.69.1"]\
           ],\
           "packagePeers": [\
             "@types/rollup",\
@@ -2283,10 +2283,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["rollup", [\
-        ["npm:2.68.0", {\
-          "packageLocation": "./.yarn/cache/rollup-npm-2.68.0-a360c126f4-c883f6fb2e.zip/node_modules/rollup/",\
+        ["npm:2.69.1", {\
+          "packageLocation": "./.yarn/cache/rollup-npm-2.69.1-06571f9fe3-dc9b21b0ec.zip/node_modules/rollup/",\
           "packageDependencies": [\
-            ["rollup", "npm:2.68.0"],\
+            ["rollup", "npm:2.69.1"],\
             ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"]\
           ],\
           "linkType": "HARD"\
@@ -2307,7 +2307,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fast-check", "npm:2.22.0"],\
             ["prettier", "npm:2.5.1"],\
             ["recast", "npm:0.20.5"],\
-            ["rollup", "npm:2.68.0"],\
+            ["rollup", "npm:2.69.1"],\
             ["terser", "npm:5.12.0"],\
             ["ts-dedent", "npm:2.2.0"],\
             ["ts-node", "virtual:0bf11f6e0f31dfbdac98472e2ee61d5e97f9826419f5f1ab12e65598b3fe0b6372aeec03b264e7a0a680bb8cbbc5dbb834c36be7a59302b04dd3cf415de76a93#npm:10.5.0"],\

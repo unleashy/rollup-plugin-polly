@@ -50,7 +50,7 @@
     "del-cli": "^3.0.1",
     "fast-check": "^2.22.0",
     "prettier": "^2.5.1",
-    "rollup": "^2.68.0",
+    "rollup": "^2.69.1",
     "terser": "^5.12.0",
     "ts-dedent": "^2.2.0",
     "ts-node": "^10.5.0",
