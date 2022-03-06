@@ -5,8 +5,16 @@ import { testBundle } from "./util";
 let parser: (input: string) => boolean;
 
 test.before(async () => {
-  const { module } = await testBundle("fixtures/integration.js");
-  parser = module.exports.parser as typeof parser;
+  try {
+    const { module } = await testBundle("fixtures/integration.js");
+    parser = module.exports.parser as typeof parser;
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error(`!!! Error:`, e.message);
+    } else {
+      throw e;
+    }
+  }
 });
 
 test("succeeds for matching input", () => {

@@ -22,13 +22,13 @@ test("Span.text returns the right slice", () => {
   assert.equal(new Span(contents, 5, 1).text, "r");
 });
 
-test("Span.humanise returns the right line(s)", () => {
+test("Span.lines returns the right line(s)", () => {
   const contents = "a\n猫\n";
 
-  assert.equal(new Span(contents, 0, 0).humanise(), "1");
-  assert.equal(new Span(contents, 2, 1).humanise(), "2");
-  assert.equal(new Span(contents, 0, 2).humanise(), "1-2");
-  assert.equal(new Span(contents, 0, 4).humanise(), "1-3");
+  assert.equal(new Span(contents, 0, 0).lines, { start: 1, end: 1 });
+  assert.equal(new Span(contents, 2, 1).lines, { start: 2, end: 2 });
+  assert.equal(new Span(contents, 0, 2).lines, { start: 1, end: 2 });
+  assert.equal(new Span(contents, 0, 4).lines, { start: 1, end: 3 });
 });
 
 test.run();

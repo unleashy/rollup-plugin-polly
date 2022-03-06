@@ -3,6 +3,7 @@ import { createFilter } from "@rollup/pluginutils";
 import * as recast from "recast";
 import * as types from "ast-types";
 import { compile as actualCompile } from "./compiler";
+import { PollyError } from "./error";
 
 export interface Options {
   include?: string | string[];
@@ -79,9 +80,18 @@ export default function polly(options: Options = {}): Plugin {
           }
 
           const grammar = node.quasi.quasis[0].value.raw;
-          const compiled = compile(grammar);
 
-          path.replace(compiled);
+          try {
+            const compiled = compile(grammar);
+
+            path.replace(compiled);
+          } catch (e) {
+            if (e instanceof PollyError) {
+              throw new Error(e.humanise(id, node.loc?.start.line ?? 1));
+            } else {
+              throw e;
+            }
+          }
 
           return false;
         }
@@ -99,7 +109,7 @@ export default function polly(options: Options = {}): Plugin {
 
 export type Parser = (code: string) => unknown;
 
-export function createParser(grammar: TemplateStringsArray): Parser {
+export function createParser(_grammar: TemplateStringsArray): Parser {
   throw new Error(
     "createParser was called at runtime; did you set rollup-plugin-polly as " +
       "one of your plugins in rollup/vite?"

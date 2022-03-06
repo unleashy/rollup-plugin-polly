@@ -36,11 +36,6 @@ export type Kind = KindType<Kinds[keyof Kinds]>;
 export class Token<K extends Kind = Kind> {
   constructor(readonly kind: K, readonly span: Span) {}
 
-  humanise(): string {
-    const text = JSON.stringify(this.span.text);
-    return `${this.kind.name}:${this.span.humanise()} (${text})`;
-  }
-
   get isEnd(): boolean {
     return this.kind === kinds.end;
   }

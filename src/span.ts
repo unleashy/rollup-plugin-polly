@@ -16,15 +16,10 @@ export class Span {
     );
   }
 
-  humanise(): string {
-    const startLine = this.lineAt(this.index);
-    const endLine = this.lineAt(this.index + this.length - 1);
-
-    if (startLine === endLine) {
-      return `${startLine}`;
-    } else {
-      return `${startLine}-${endLine}`;
-    }
+  get lines(): { start: number; end: number } {
+    const start = this.lineAt(this.index);
+    const end = this.lineAt(this.index + this.length - 1);
+    return { start, end };
   }
 
   private lineAt(index: number): number {
