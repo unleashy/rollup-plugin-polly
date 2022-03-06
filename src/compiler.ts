@@ -17,6 +17,16 @@ function advance(by) {
   i += by;
   return true;
 }
+
+function memoise(map, rule) {
+  let memod = map.get(i);
+  if (memod === undefined) {
+    memod = rule();
+    map.set(i, memod);  
+  }
+  
+  return memod;
+}
 `;
 
 const PIECES = {
@@ -360,21 +370,42 @@ export function compile(grammar: string): types.FunctionExpression {
     }
   };
 
-  const ruleFns = [];
+  const rules = [];
 
   for (const [name, expr] of Object.entries(grammarAst.defs)) {
     const body = visit(expr, visitors);
 
-    // function $name() { [body] }
-    const fn = b.functionDeclaration(
-      ruleIdent(name),
-      [],
-      body.type === "ArrowFunctionExpression"
-        ? (body.body as types.BlockStatement)
-        : b.blockStatement([b.returnStatement(body)])
+    /*
+      Creates a rule function together with its memo map.
+        const memoRule = new Map();
+        function $rule() {
+          return memoise(memoRule, () => [body]);
+        }
+     */
+    const ruleName = ruleIdent(name);
+    const memoIdent = b.identifier(`memo${ruleName.name}`);
+    rules.push(
+      b.variableDeclaration("const", [
+        b.variableDeclarator(
+          memoIdent,
+          b.newExpression(b.identifier("Map"), [])
+        )
+      ]),
+      b.functionDeclaration(
+        ruleName,
+        [],
+        b.blockStatement([
+          b.returnStatement(
+            b.callExpression(b.identifier("memoise"), [
+              memoIdent,
+              body.type === "ArrowFunctionExpression"
+                ? body
+                : b.arrowFunctionExpression([], body)
+            ])
+          )
+        ])
+      )
     );
-
-    ruleFns.push(fn);
   }
 
   const pieces = recast.parse(PRELUDE).program.body;
@@ -391,6 +422,6 @@ export function compile(grammar: string): types.FunctionExpression {
   return b.functionExpression(
     null,
     [b.identifier("input")],
-    b.blockStatement([...pieces, ...ruleFns, kickoff])
+    b.blockStatement([...pieces, ...rules, kickoff])
   );
 }
