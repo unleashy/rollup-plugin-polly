@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "rollup": "^2.69.1",
+    "rollup-plugin-polly": "portal:../..",
+    "vite": "^2.8.0"
+  }
+}
